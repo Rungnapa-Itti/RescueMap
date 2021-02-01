@@ -8,7 +8,13 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
@@ -22,6 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import java.text.DecimalFormat
 import java.util.*
 
+
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
 GoogleMap.OnMarkerClickListener {
 
@@ -30,6 +37,10 @@ GoogleMap.OnMarkerClickListener {
     private lateinit var lastLocation: Location
     private var MyLongitude: Double? = null
     private var Mylatitude: Double? = null
+    private lateinit var drawer:DrawerLayout
+    private lateinit var toggle:ActionBarDrawerToggle
+
+
 
     //new 25-1-64
 //    lateinit var mService: IGoogleAPIService
@@ -38,6 +49,16 @@ GoogleMap.OnMarkerClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //menu slide
+        val toolbar =
+            findViewById(R.id.toolbar) as Toolbar?
+        setSupportActionBar(toolbar)
+
+//        drawer = findViewById(R.id.drawer_layout)
+//        toggle = ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close)
+//        drawer.addDrawerListener(toggle)
+//        toggle.syncState()
 
         // new 27-1-64 change language on map
         val languageToLoad = "th_TH"
@@ -63,7 +84,15 @@ GoogleMap.OnMarkerClickListener {
 
 
     }
-
+    // for toggle menu slide
+//    override fun onBackPressed() {
+//        if (drawer.isDrawerOpen(GravityCompat.START)){
+//            drawer.closeDrawer(GravityCompat.START)
+//        }else{
+//            super.onBackPressed()
+//        }
+//
+//    }
 
     /**
      * Manipulates the map once available.
