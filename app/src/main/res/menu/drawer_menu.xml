@@ -4,21 +4,18 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_messages"
-            android:icon="@drawable/ic_message"
-            android:title="Message"/>
-        <item android:id="@+id/nav_chat"
-            android:icon="@drawable/ic_message"
-            android:title="Chat"/>
+        <item android:id="@+id/nav_map"
+            android:icon="@drawable/ic_location"
+            android:title="แผนที่แจ้งเตือนภัย"/>
+        <item android:id="@+id/nav_place"
+            android:icon="@drawable/ic_place"
+            android:title="สถานที่จำเป็น"/>
+        <item android:id="@+id/nav_call"
+            android:icon="@drawable/ic_call"
+            android:title="เบอร์ฉุกเฉิน"/>
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item android:id="@+id/nav_share"
-                android:title="Share" />
 
-        </menu>
-    </item>
 
 
 

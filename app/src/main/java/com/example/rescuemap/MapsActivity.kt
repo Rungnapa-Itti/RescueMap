@@ -50,15 +50,7 @@ GoogleMap.OnMarkerClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //menu slide
-        val toolbar =
-            findViewById(R.id.toolbar) as Toolbar?
-        setSupportActionBar(toolbar)
 
-//        drawer = findViewById(R.id.drawer_layout)
-//        toggle = ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close)
-//        drawer.addDrawerListener(toggle)
-//        toggle.syncState()
 
         // new 27-1-64 change language on map
         val languageToLoad = "th_TH"
@@ -81,6 +73,16 @@ GoogleMap.OnMarkerClickListener {
 //        mService = Common.googleApiService
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        //menu slide
+        val toolbar =
+            findViewById(R.id.toolbar) as Toolbar?
+        setSupportActionBar(toolbar)
+
+        drawer = findViewById(R.id.drawer_layout)
+        toggle = ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close)
+        drawer.addDrawerListener(toggle)
+        toggle.syncState()
 
 
     }
