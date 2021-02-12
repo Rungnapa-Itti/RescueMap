@@ -1,23 +1,33 @@
 package com.example.rescuemap
 
 import android.Manifest
+import android.app.PendingIntent.getActivity
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.location.Address
 import android.location.Geocoder
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
+import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
+import android.view.KeyEvent
+import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -25,12 +35,15 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.navigation.NavigationView
+import java.io.IOException
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
-GoogleMap.OnMarkerClickListener {
+open class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
+GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -39,6 +52,15 @@ GoogleMap.OnMarkerClickListener {
     private var Mylatitude: Double? = null
     private lateinit var drawer:DrawerLayout
     private lateinit var toggle:ActionBarDrawerToggle
+    private lateinit var navigationView: NavigationView
+    var appSetup = AppSetup()
+    lateinit var bundle : Bundle
+    var fragment:Fragment? = null
+    lateinit var fragmentManager:FragmentManager
+    lateinit var fragmentTransaction: FragmentTransaction
+    var mSearchText: EditText? = null
+
+
 
 
 
@@ -47,7 +69,8 @@ GoogleMap.OnMarkerClickListener {
 //    internal lateinit var currentPlace: MyPlaces
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override  fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
 
@@ -64,6 +87,8 @@ GoogleMap.OnMarkerClickListener {
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
+        mSearchText = findViewById(R.id.input_search)
+        init()
 
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
@@ -80,19 +105,86 @@ GoogleMap.OnMarkerClickListener {
         setSupportActionBar(toolbar)
 
         drawer = findViewById(R.id.drawer_layout)
+        //change page
+        navigationView = findViewById(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
         toggle = ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
         toggle.syncState()
 
 
+
+
+
     }
     // for toggle menu slide
-//    override fun onBackPressed() {
-//        if (drawer.isDrawerOpen(GravityCompat.START)){
-//            drawer.closeDrawer(GravityCompat.START)
-//        }else{
-//            super.onBackPressed()
+    override fun onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START)
+        }else{
+            super.onBackPressed()
+        }
+
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        var id = item.itemId
+        if (id == R.id.nav_map){
+            fragment = MapFragment()
+
+        }else if (id == R.id.nav_place){
+            fragment = SearchPlacesFragment()
+        }
+
+        if (fragment != null){
+            fragmentManager = supportFragmentManager
+            fragmentTransaction = fragmentManager.beginTransaction()
+
+            fragmentTransaction.replace(R.id.fragment_container , fragment!!)
+
+            fragmentTransaction.commit()
+        }
+//        when(item.itemId) {
+//
+//            R.id.nav_map -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, MapFragment()).commit()
+//            R.id.nav_place -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, SearchPlacesFragment()).commit()
+//       }
+      drawer.closeDrawer(GravityCompat.START)
+      return true;
+        //return super.onOptionsItemSelected(item)
+
+
+
+    }
+    // for search
+    private fun init() {
+
+        mSearchText!!.setOnEditorActionListener { v, actionId, event ->
+            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH || event.action == KeyEvent.ACTION_DOWN || event.action == KeyEvent.KEYCODE_ENTER ){
+                //geoLocate()
+                Log.d("TAG","Text : "+mSearchText!!.text.toString())
+            }
+            return@setOnEditorActionListener false
+        }
+    }
+//    private fun geoLocate(){
+//        var geocoder : Geocoder
+//        var searchString = mSearchText!!.text.toString()
+//         geocoder = Geocoder(MapsActivity.this)
+//        var list = ArrayList<Address>()
+//        try{
+//            list = geocoder.getFromLocationName(searchString,1) as ArrayList<Address>
+//        }catch (e:IOException){
+//            Log.e("TAG","geoLacate: "+e.message)
 //        }
+//        if(list.size > 0){
+//            var address:Address
+//            address = list.get(0)
+//
+//            Log.d("TAG","geoLocate: found a location "+address.toString())
+//           // Toast.makeText(this,address.toString(),Toast.LENGTH_SHORT).show()
+//        }
+//
 //
 //    }
 
@@ -107,6 +199,7 @@ GoogleMap.OnMarkerClickListener {
      */
     override fun onMapReady(googleMap: GoogleMap) {
 
+
         map = googleMap
         // Add a marker in Sydney and move the camera
 //        val myPlace = LatLng(40.73, -73.99)
@@ -116,7 +209,11 @@ GoogleMap.OnMarkerClickListener {
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
 
+
         setUpMap()
+        init()
+
+
 
         /* หาระยะห่าง
          map = googleMap
@@ -176,7 +273,7 @@ GoogleMap.OnMarkerClickListener {
     override fun onMarkerClick(p0: Marker?) = false
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
     }
 
@@ -222,5 +319,11 @@ GoogleMap.OnMarkerClickListener {
 
         return list[0].getAddressLine(0)
     }
+
+    fun recreateAcitivity(item: MenuItem) {
+        appSetup.refreshApp(this);
+
+    }
+
 
 }
