@@ -14,6 +14,7 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -26,16 +27,22 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.example.rescuemap.Common.Common
+import com.example.rescuemap.Model.MyPlaces
+import com.example.rescuemap.Remote.IGoogleAPIService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.navigation.NavigationView
+import retrofit2.Call
+import retrofit2.Callback
 import java.io.IOException
 import java.text.DecimalFormat
 import java.util.*
@@ -58,7 +65,13 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     var fragment:Fragment? = null
     lateinit var fragmentManager:FragmentManager
     lateinit var fragmentTransaction: FragmentTransaction
+    //for search place
     var mSearchText: EditText? = null
+
+    lateinit var mService: IGoogleAPIService
+    internal lateinit var currentPlace: MyPlaces
+
+
 
 
 
@@ -87,6 +100,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
+
         mSearchText = findViewById(R.id.input_search)
         init()
 
@@ -94,8 +108,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        //new 25-1-64  --- Init service
-//        mService = Common.googleApiService
+        // --- Init service
+        mService = Common.googleApiService
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -163,6 +177,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH || event.action == KeyEvent.ACTION_DOWN || event.action == KeyEvent.KEYCODE_ENTER ){
                 //geoLocate()
                 Log.d("TAG","Text : "+mSearchText!!.text.toString())
+                nearByPlace(mSearchText!!.text.toString())
             }
             return@setOnEditorActionListener false
         }
@@ -211,6 +226,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
 
         setUpMap()
+        //action of search bar
         init()
 
 
@@ -305,6 +321,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     }
 
 
+
     private fun getAddress(lat: LatLng): String? {
 
 
@@ -312,18 +329,103 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         val list = geocoder.getFromLocation(lat.latitude, lat.longitude, 1)
         // Log.e("lat", lat.latitude.toString())
 
-        //new 14-01-64
-       // setLatitudeAndLongitude(lat.latitude.toString().toDouble(), lat.longitude.toString().toDouble())
+        //for search places
+       setLatitudeAndLongitude(lat.latitude.toString().toDouble(), lat.longitude.toString().toDouble())
 
 
 
         return list[0].getAddressLine(0)
     }
+    private fun nearByPlace(typePlace: String) {
+        //Clear all marker on Map
+        map.clear()
+        //build URL request base on lacation
+        val url = getUrl(getLatitude()!!, getLongitude()!!, typePlace)
+
+        mService.getNearbyPlaces(url)
+                .enqueue(object : Callback<MyPlaces> {
+                    override fun onFailure(call: Call<MyPlaces>, t: Throwable) {
+                        Toast.makeText(baseContext, "" + t!!.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onResponse(call: Call<MyPlaces>, response: retrofit2.Response<MyPlaces>) {
+                        currentPlace = response!!.body()!!
+
+                        if (response!!.isSuccessful) {
+
+
+                            for (i in 0 until response!!.body()!!.results!!.size) {
+                                val markerOptions = MarkerOptions()
+                                val googlePlaces = response.body()!!.results!![i]
+                                val lat = googlePlaces.geometry!!.location!!.lat
+                                val lng = googlePlaces.geometry!!.location!!.lng
+                                val placeName = googlePlaces.name
+                                val latLng = LatLng(lat, lng)
+
+                                markerOptions.position(latLng)
+                                markerOptions.title(placeName)
+//                                if (typePlace.equals("hospital"))
+//                                  //  markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_hospital))
+
+                                //34.35 เพิ่มเติม
+
+                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+
+                                markerOptions.snippet(i.toString()) //Assign index for Market
+
+                                //Add marker to map
+                                map!!.addMarker(markerOptions)
+
+                            }
+                            //move camera
+                            map!!.moveCamera(CameraUpdateFactory.newLatLng(LatLng(Mylatitude!!,MyLongitude!!)))
+                            map!!.animateCamera(CameraUpdateFactory.zoomTo(11f))
+
+                        }
+                    }
+
+
+                })
+
+
+    }
+    private fun getUrl(latitude: Double,longitude: Double,typePlace: String):String{
+
+        val googlePlaceUrl = StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json")
+        googlePlaceUrl.append("?location=${latitude},${longitude}")
+        googlePlaceUrl.append("&radius=10000")//10km -> 10000
+        googlePlaceUrl.append("&type=${typePlace}")
+        googlePlaceUrl.append("&key=AIzaSyCFV5FI2cHCpCrOAtjYXC_X72kS7T_8nSQ")
+
+        Log.d("URL_DEBUG",googlePlaceUrl.toString())
+        return googlePlaceUrl.toString()
+
+
+    }
+    private fun setLatitudeAndLongitude(latitude: Double, longitude: Double) {
+        Mylatitude = latitude
+        MyLongitude = longitude
+
+    }
+
+    private fun getLatitude(): Double? {
+
+        return Mylatitude
+    }
+
+    //new 14-01-64
+    private fun getLongitude(): Double? {
+
+        return MyLongitude
+    }
+
 
     fun recreateAcitivity(item: MenuItem) {
+        mSearchText!!.setText("")
         appSetup.refreshApp(this);
 
     }
+
 
 
 }
