@@ -131,7 +131,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
 
             //get http request
-            fixedRateTimer("default", false, 0L, 20000) {
+            fixedRateTimer("default", false, 0L, 30000) {
                 println("Hello!")
                 getRequest()
 
@@ -485,12 +485,18 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
         for (item in data!!){
             Log.d("TEST","${item.latitude} ${item.longitude}")
-            val kmInDec = calculate(item.latitude.toDouble(),item.longitude.toDouble())
-            if (kmInDec <= 1.0) {
-                if (state == false && getLatitude() != null && getLongitude() != null) {
-                    val list = geocoder.getFromLocation(item.latitude.toDouble(), item.longitude.toDouble(), 1)
-                    getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude)
+            try {
+                val kmInDec = calculate(item.latitude.toDouble(),item.longitude.toDouble())
+                if (kmInDec <= 1.0) {
+                    if (state == false && getLatitude() != null && getLongitude() != null) {
+                        val list = geocoder.getFromLocation(item.latitude.toDouble(), item.longitude.toDouble(), 1)
+                        getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude)
+                    }
                 }
+
+            }
+            catch (e:java.lang.Exception){
+                Log.e("test",e.message.toString())
             }
 
 
