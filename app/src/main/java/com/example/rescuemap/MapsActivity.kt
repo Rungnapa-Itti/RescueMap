@@ -131,7 +131,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
 
             //get http request
-            fixedRateTimer("default", false, 0L, 30000) {
+            fixedRateTimer("default", false, 0L, 50000) {
                 println("Hello!")
                 getRequest()
 
