@@ -34,10 +34,7 @@ import com.example.rescuemap.Model.MyPlaces
 import com.example.rescuemap.Remote.IGoogleAPIService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -76,13 +73,9 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     internal lateinit var currentPlace: MyPlaces
 
     var state = false
-
-
-
-
-
-
-
+    //var listAlerted : List<String> = listOf()
+    var listAlerted = mutableListOf<String>()
+    var queue = mutableListOf<String>()
 
     override  fun onCreate(savedInstanceState: Bundle?) {
 
@@ -131,7 +124,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
 
             //get http request
-            fixedRateTimer("default", false, 0L, 50000) {
+            fixedRateTimer("default", false, 0L, 30000) {
                 println("Hello!")
                 getRequest()
 
@@ -485,18 +478,34 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
         for (item in data!!){
             Log.d("TEST","${item.latitude} ${item.longitude}")
+            var content = "${item.latitude} ${item.longitude} ${item.topic}"
+
+
             try {
                 val kmInDec = calculate(item.latitude.toDouble(),item.longitude.toDouble())
-                if (kmInDec <= 1.0) {
-                    if (state == false && getLatitude() != null && getLongitude() != null) {
+
+                if (kmInDec <= 1 ) {
+                        //alert isn't open and Latitude Longitude not null and this location never open alert
+                    if (state == false && getLatitude() != null && getLongitude() != null && listAlerted.contains(content) == false) {
+                        Log.d("You stay around radius","${state} ${getLatitude()} ${getLongitude()}")
+                        //  do alert Success
+                        listAlerted.add(content)
+                        Log.d("ListAlerted", listAlerted.toString())
                         val list = geocoder.getFromLocation(item.latitude.toDouble(), item.longitude.toDouble(), 1)
                         getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude)
                     }
+                    // alert is open and Latitude Longitude not null and this location do alert Success and this location isn't in queue
+//                   if (state == true && getLatitude() != null && getLongitude() != null && listAlerted.contains(content) == false && queue.contains(item.toString()) == false){
+//
+//                        queue.add(item.toString())
+//                        Log.d("Queue","${state} ${queue.toString()}")
+//
+//                    }
                 }
 
             }
             catch (e:java.lang.Exception){
-                Log.e("test",e.message.toString())
+                Log.e("Err CheckItemJson",e.message.toString())
             }
 
 
@@ -518,8 +527,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
     private fun getAlert(topic: String, comment: String, address: String, latitude: String, longitude: String) {
 
-
-        state = true
+         Log.d("GET Alert","ok")
+            state = true
             val builder = AlertDialog.Builder(this)
             builder.setTitle(topic)
             builder.setMessage("${comment}\n${address}\n\n${latitude} ${longitude} ")
@@ -529,11 +538,13 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 state = false
                 map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address))
             })
+
             builder.show()
 
+    }
 
-
-
+    private fun test(){
+        Log.d("call func","OK")
     }
 
 
