@@ -25,6 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RescueMap"
         android:usesCleartextTraffic="true">
+        <activity android:name=".AddPlaceActivity" />
 
 
         <!--

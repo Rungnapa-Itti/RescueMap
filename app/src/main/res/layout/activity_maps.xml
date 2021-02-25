@@ -80,9 +80,16 @@
                     android:hint="Enter Address,City or Zip Code"
                     android:imeOptions="actionSearch"/>
 
-
             </RelativeLayout>
 
+            <Button
+                android:id="@+id/buttonAdd"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="670dp"
+                android:layout_marginLeft="20dp"
+                android:text=""
+                android:background="@drawable/addbut_bg"/>
 
         </FrameLayout>
 

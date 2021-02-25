@@ -3,6 +3,7 @@ package com.example.rescuemap
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.location.Geocoder
@@ -42,6 +43,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_maps.*
 import retrofit2.Call
 import retrofit2.Callback
 import java.lang.reflect.Type
@@ -76,6 +78,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     //var listAlerted : List<String> = listOf()
     var listAlerted = mutableListOf<String>()
     var queue = mutableListOf<String>()
+    var currentLoc: String? = null
 
     override  fun onCreate(savedInstanceState: Bundle?) {
 
@@ -125,13 +128,20 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
             //get http request
             fixedRateTimer("default", false, 0L, 30000) {
-                println("Hello!")
+                println("Hello2!")
                 getRequest()
 
             }
 
 
+        buttonAdd.setOnClickListener {
+            val addBut = Intent(this, AddPlaceActivity::class.java)
+            startActivity(addBut)
 
+            val currentLoc2 = Intent(this@MapsActivity,AddPlaceActivity::class.java)
+            currentLoc2.putExtra("list",currentLoc)
+            startActivity(currentLoc2)
+        }
 
     }
     // for toggle menu slide
@@ -290,6 +300,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
         map.addMarker(markerOptions)
         setLatitudeAndLongitude(location)
+        getAddress(location)
 
         //14-01-64
        // getRequest()
@@ -340,11 +351,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
         //for search places
       // setLatitudeAndLongitude(lat.latitude.toString().toDouble(), lat.longitude.toString().toDouble())
-
-
-
-
-        return list[0].getAddressLine(0)
+        currentLoc = list[0].getAddressLine(0)
+        return currentLoc
     }
     private fun nearByPlace(typePlace: String) {
         //Clear all marker on Map
