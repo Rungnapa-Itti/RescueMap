@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+
+
+    <TextView
+        android:id="@+id/TextAlertDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/Comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="  ความคิดเห็นเกี่ยวกับเหตุการณ์"
+        android:layout_marginTop="30dp"
+        android:textSize="15dp"
+        />
+
+    <TextView
+        android:id="@+id/TextAlertComment"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:scrollbars="vertical"
+        android:layout_marginTop="10dp"
+
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:hint="แสดงความคิดเห็น">
+
+    </EditText>
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button1"
+            android:layout_marginLeft="70dp"
+            android:text="ตกลง"
+            android:textColor="@color/white"
+            android:background="#db5a6b"
+
+
+            />
+        <Button
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button2"
+            android:text="นำทาง"
+            android:textColor="@color/white"
+            android:background="#db5a6b"
+            />
+    </LinearLayout>
+
+</LinearLayout>

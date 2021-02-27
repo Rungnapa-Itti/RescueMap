@@ -6,16 +6,15 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Paint
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
-import android.view.KeyEvent
-import android.view.MenuItem
+import android.view.*
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -35,7 +34,10 @@ import com.example.rescuemap.Model.MyPlaces
 import com.example.rescuemap.Remote.IGoogleAPIService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -44,6 +46,8 @@ import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_maps.*
+import kotlinx.android.synthetic.main.showalert.*
+import kotlinx.android.synthetic.main.showalert.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import java.lang.reflect.Type
@@ -79,6 +83,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     var listAlerted = mutableListOf<String>()
     var queue = mutableListOf<String>()
     var currentLoc: String? = null
+
+
 
     override  fun onCreate(savedInstanceState: Bundle?) {
 
@@ -391,7 +397,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
                                 //34.35 เพิ่มเติม
 
-                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
 
                                 markerOptions.snippet(i.toString()) //Assign index for Market
 
@@ -417,8 +423,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         val googlePlaceUrl = StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json")
         googlePlaceUrl.append("?location=${latitude},${longitude}")
         googlePlaceUrl.append("&radius=10000")//10km -> 10000
-        googlePlaceUrl.append("&type=${typePlace}")
-        googlePlaceUrl.append("&key=AIzaSyCFV5FI2cHCpCrOAtjYXC_X72kS7T_8nSQ")
+        googlePlaceUrl.append("&type=${typePlace}&key=AIzaSyCFV5FI2cHCpCrOAtjYXC_X72kS7T_8nSQ")
+        //googlePlaceUrl.append("&key=AIzaSyCFV5FI2cHCpCrOAtjYXC_X72kS7T_8nSQ")
 
         Log.d("URL_DEBUG",googlePlaceUrl.toString())
         return googlePlaceUrl.toString()
@@ -534,26 +540,51 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun getAlert(topic: String, comment: String, address: String, latitude: String, longitude: String) {
+        Log.d("GET Alert","ok")
+        state = true
 
-         Log.d("GET Alert","ok")
-            state = true
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle(topic)
-            builder.setMessage("${comment}\n${address}\n\n${latitude} ${longitude} ")
+        val mDialogView = LayoutInflater.from(this).inflate(R.layout.showalert,null)
+        val mBuilder = AlertDialog.Builder(this)
+                .setView(mDialogView)
+                .setTitle(topic)
+
+        mDialogView.Comment.setPaintFlags(Paint.FAKE_BOLD_TEXT_FLAG);
+
+        mDialogView.TextAlertDetail.setText("${comment}\n${address}\n\n${latitude} ${longitude} ")
+        mDialogView.TextAlertComment.setText("\"Mohandas Karamchand Gandhi (/ˈɡɑːndi, ˈɡændi/;[2] Hindustani: [ˈmoːɦəndaːs ˈkərəmtʃənd ˈɡaːndʱi] (About this soundlisten);\n" +
+                "         2 October 1869 – 30 January 1948) was an Indian activist who was the leader of the Indian independence movement against British colonial rule.[3]\n" +
+                "         Employing nonviolent civil disobedience, Gandhi led India to independence and inspired movements for civil rights and freedom across the world.\n" +
+                "         The honorific Mahātmā (Sanskrit: \\\"high-souled\\\", \\\"venerable\\\")[4] was applied to him first in 1914 in South Africa[5] and is now used worldwide.\n" +
+                "         In India, he was also called Bapu, a term that he preferred[6] (Gujarati: endearment for father,[7] papa[7][8]), and Gandhi ji, and is known as the Father of the\n" +
+                "         Nation.[9][10]\\n\" + \"\\n\" + \"Born and raised in a Hindu family in coastal Gujarat, western India, and trained in law at the Inner Temple, London, Gandhi first\n" +
+                "         employed nonviolent civil disobedience as an expatriate lawyer in South Africa, in the resident Indian community's struggle for civil rights. After his return\n" +
+                "         to India in 1915, he set about organising peasants,  farmers, and urban labourers to protest against excessive land-tax and discrimination.\n" +
+                "         Assuming leadership of the Indian National Congress in 1921, Gandhi led nationwide campaigns for various social causes and for achieving Swaraj or\n" +
+                "         self-rule.[11]\\n\" + \"\\n\" + \"Gandhi led Indians in challenging the British-imposed salt tax with the 400 km (250 mi) Dandi Salt March in 1930, and\n" +
+                "         later in calling for the British to Quit India in 1942. He was imprisoned for many years, upon many occasions, in both South Africa and India.\n" +
+                "         He lived modestly in a self-sufficient residential community and wore the traditional Indian dhoti\n" +
+                "o assassinated Gandhi on 30 January 1948 by firing three bullets into his chest.[15\""
+
+        )
+
+        mDialogView.TextAlertComment.setMovementMethod(ScrollingMovementMethod());
 
 
-            builder.setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
-                state = false
-                map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address))
-            })
+        val mAlertDialog = mBuilder.show()
 
-            builder.show()
+        mDialogView.button1.setOnClickListener{
+            state = false
+            map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address)).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            mAlertDialog.dismiss()
+        }
+
+
+
+
+
 
     }
 
-    private fun test(){
-        Log.d("call func","OK")
-    }
 
 
 
