@@ -6,9 +6,11 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Color
 import android.graphics.Paint
 import android.location.Geocoder
 import android.location.Location
+import android.os.AsyncTask
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
@@ -38,21 +40,20 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.showalert.*
 import kotlinx.android.synthetic.main.showalert.view.*
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import java.lang.reflect.Type
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
 
 
@@ -113,6 +114,9 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                     .findFragmentById(R.id.map) as SupportMapFragment
             mapFragment.getMapAsync(this)
 
+
+
+
             // --- Init service
             mService = Common.googleApiService
 
@@ -158,6 +162,91 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             super.onBackPressed()
         }
 
+    }
+
+    fun getDirectionURL(origin:LatLng,dest:LatLng) : String{
+        Log.d("Path GetDirection","https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&sensor=false&mode=driving&key=AIzaSyCFV5FI2cHCpCrOAtjYXC_X72kS7T_8nSQ")
+        return "https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&sensor=false&mode=driving&key=AIzaSyCFV5FI2cHCpCrOAtjYXC_X72kS7T_8nSQ"
+    }
+
+
+    private inner class GetDirection(val url : String) : AsyncTask<Void,Void,List<List<LatLng>>>(){
+        override fun doInBackground(vararg params: Void?): List<List<LatLng>> {
+            val client = OkHttpClient()
+            val request = okhttp3.Request.Builder().url(url).build()
+            val response = client.newCall(request).execute()
+            val data = response.body()!!.string()
+            Log.d("GoogleMap" , " data : $data")
+            val result =  ArrayList<List<LatLng>>()
+            try{
+                val respObj = Gson().fromJson(data,GoogleMapDTO::class.java)
+
+                val path =  ArrayList<LatLng>()
+
+                for (i in 0..(respObj.routes[0].legs[0].steps.size-1)){
+//                    val startLatLng = LatLng(respObj.routes[0].legs[0].steps[i].start_location.lat.toDouble()
+//                            ,respObj.routes[0].legs[0].steps[i].start_location.lng.toDouble())
+//                    path.add(startLatLng)
+//                    val endLatLng = LatLng(respObj.routes[0].legs[0].steps[i].end_location.lat.toDouble()
+//                            ,respObj.routes[0].legs[0].steps[i].end_location.lng.toDouble())
+                    path.addAll(decodePolyline(respObj.routes[0].legs[0].steps[i].polyline.points))
+                }
+                result.add(path)
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+            return result
+        }
+
+    public fun decodePolyline(encoded: String): List<LatLng> {
+
+        val poly = ArrayList<LatLng>()
+        var index = 0
+        val len = encoded.length
+        var lat = 0
+        var lng = 0
+
+        while (index < len) {
+            var b: Int
+            var shift = 0
+            var result = 0
+            do {
+                b = encoded[index++].toInt() - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lat += dlat
+
+            shift = 0
+            result = 0
+            do {
+                b = encoded[index++].toInt() - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lng += dlng
+
+            val latLng = LatLng((lat.toDouble() / 1E5),(lng.toDouble() / 1E5))
+            poly.add(latLng)
+        }
+
+        return poly
+    }
+
+
+
+        override fun onPostExecute(result: List<List<LatLng>>?) {
+            val lineOption = PolylineOptions()
+            for (i in result!!.indices){
+                lineOption.addAll(result[i])
+                lineOption.width(10f)
+                lineOption.color(Color.RED)
+                lineOption.geodesic(true)
+            }
+            map.addPolyline(lineOption)
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -301,7 +390,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     private fun placeMarkerOnMap(location: LatLng) {
 
         val markerOptions = MarkerOptions().position(location)
-        val titleStr = "Test"//getAddress(location)
+        val titleStr = getAddress(location)
         markerOptions.title(titleStr)
 
         map.addMarker(markerOptions)
@@ -574,6 +663,19 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
         mDialogView.button1.setOnClickListener{
             state = false
+            map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address)).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            mAlertDialog.dismiss()
+        }
+        mDialogView.button2.setOnClickListener{
+            state = false
+            try {
+                val sourceLocation = LatLng(getLatitude()!!.toDouble(), getLongitude()!!.toDouble())
+                val destLocation = LatLng(latitude.toDouble(),longitude.toDouble())
+                val URL = getDirectionURL(sourceLocation,destLocation)
+                GetDirection(URL).execute()
+            }catch (e:Exception){
+                Log.d("Err GetAlert LatLng()",e.message.toString())
+            }
             map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address)).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             mAlertDialog.dismiss()
         }

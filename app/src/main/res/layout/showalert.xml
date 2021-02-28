@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/button2"
-            android:text="นำทาง"
+            android:text="แสดงเส้นทาง"
             android:textColor="@color/white"
             android:background="#db5a6b"
             />
