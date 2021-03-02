@@ -7,7 +7,6 @@
     android:padding="10dp">
 
 
-
     <TextView
         android:id="@+id/TextAlertDetail"
         android:layout_width="match_parent"
@@ -17,10 +16,10 @@
     </TextView>
 
     <TextView
-        android:id="@+id/Comment"
+        android:id="@+id/TextComment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="  ความคิดเห็นเกี่ยวกับเหตุการณ์"
+        android:text="  ความคิดเห็นเพ่ิมเติมเกี่ยวกับเหตุการณ์"
         android:layout_marginTop="30dp"
         android:textSize="15dp"
         />
@@ -33,16 +32,15 @@
         android:layout_marginTop="10dp"
 
         />
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="10dp"
-        android:hint="แสดงความคิดเห็น">
+        android:hint="แสดงความคิดเห็น"
+        android:id="@+id/Comment">
 
     </EditText>
-
-
-
 
 
     <LinearLayout
@@ -56,7 +54,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/button1"
             android:layout_marginLeft="70dp"
-            android:text="ตกลง"
+            android:text="ยืนยัันเหตุการณ์"
             android:textColor="@color/white"
             android:background="#db5a6b"
 

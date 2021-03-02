@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.rescuemap.Common.Common
@@ -45,13 +46,15 @@ import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_maps.*
-import kotlinx.android.synthetic.main.showalert.*
 import kotlinx.android.synthetic.main.showalert.view.*
 import okhttp3.OkHttpClient
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import java.lang.reflect.Type
 import java.text.DecimalFormat
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
@@ -164,12 +167,13 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
     }
 
+    //get data for show path by location
     fun getDirectionURL(origin:LatLng,dest:LatLng) : String{
         Log.d("Path GetDirection","https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&sensor=false&mode=driving&key=AIzaSyCFV5FI2cHCpCrOAtjYXC_X72kS7T_8nSQ")
         return "https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&sensor=false&mode=driving&key=AIzaSyCFV5FI2cHCpCrOAtjYXC_X72kS7T_8nSQ"
     }
 
-
+    //get data for show path by location
     private inner class GetDirection(val url : String) : AsyncTask<Void,Void,List<List<LatLng>>>(){
         override fun doInBackground(vararg params: Void?): List<List<LatLng>> {
             val client = OkHttpClient()
@@ -197,7 +201,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             }
             return result
         }
-
+        //get data for show path by location
     public fun decodePolyline(encoded: String): List<LatLng> {
 
         val poly = ArrayList<LatLng>()
@@ -236,7 +240,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     }
 
 
-
+        //get data for show path by location
         override fun onPostExecute(result: List<List<LatLng>>?) {
             val lineOption = PolylineOptions()
             for (i in result!!.indices){
@@ -291,26 +295,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             return@setOnEditorActionListener false
         }
     }
-//    private fun geoLocate(){
-//        var geocoder : Geocoder
-//        var searchString = mSearchText!!.text.toString()
-//         geocoder = Geocoder(MapsActivity.this)
-//        var list = ArrayList<Address>()
-//        try{
-//            list = geocoder.getFromLocationName(searchString,1) as ArrayList<Address>
-//        }catch (e:IOException){
-//            Log.e("TAG","geoLacate: "+e.message)
-//        }
-//        if(list.size > 0){
-//            var address:Address
-//            address = list.get(0)
-//
-//            Log.d("TAG","geoLocate: found a location "+address.toString())
-//           // Toast.makeText(this,address.toString(),Toast.LENGTH_SHORT).show()
-//        }
-//
-//
-//    }
+
 
     /**
      * Manipulates the map once available.
@@ -558,14 +543,42 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             Log.d("json",data.toString())
 
 
-
-
-
-
-
         }, Response.ErrorListener { error -> println("GET error $error") })
         queue.add(request)
 
+    }
+
+    private fun putRequest(id:String,userName:String,topic:String,comment: String,rating:String,latitude: String,longitude: String) {
+        val putUrl = "http://10.0.2.2:8081/messages/update/${id}"
+        val queue = Volley.newRequestQueue(this)
+        val putData = JSONObject()
+
+        try {
+            putData.put("id", id)
+            putData.put("userName", userName)
+            putData.put("topic", topic)
+            putData.put("comment", comment)
+            putData.put("rating", rating)
+            putData.put("latitude", latitude)
+            putData.put("longitude", longitude)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        val putRequest: JsonObjectRequest =
+                object : JsonObjectRequest(
+                        Request.Method.PUT, putUrl, putData,
+                        Response.Listener { response ->
+                            // response
+                            Log.d("PUT Http response: ", "$response")
+                        },
+                        Response.ErrorListener { error ->
+                            // error
+                            Log.i("PUT error: ", "$error")
+                        }
+                ) {
+
+                }
+        queue.add(putRequest)
     }
 
 
@@ -595,7 +608,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                         listAlerted.add(content)
                         Log.d("ListAlerted", listAlerted.toString())
                         val list = geocoder.getFromLocation(item.latitude.toDouble(), item.longitude.toDouble(), 1)
-                        getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude)
+                        getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude,item.id,item.userName,item.rating)
                     }
                     // alert is open and Latitude Longitude not null and this location do alert Success and this location isn't in queue
 //                   if (state == true && getLatitude() != null && getLongitude() != null && listAlerted.contains(content) == false && queue.contains(item.toString()) == false){
@@ -628,7 +641,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
        return 0.0
     }
 
-    private fun getAlert(topic: String, comment: String, address: String, latitude: String, longitude: String) {
+    private fun getAlert(topic: String, comment: String, address: String, latitude: String, longitude: String, id: String, userName: String, rating: String) {
         Log.d("GET Alert","ok")
         state = true
 
@@ -637,34 +650,38 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 .setView(mDialogView)
                 .setTitle(topic)
 
-        mDialogView.Comment.setPaintFlags(Paint.FAKE_BOLD_TEXT_FLAG);
+        mDialogView.TextComment.setPaintFlags(Paint.FAKE_BOLD_TEXT_FLAG);
 
-        mDialogView.TextAlertDetail.setText("${comment}\n${address}\n\n${latitude} ${longitude} ")
-        mDialogView.TextAlertComment.setText("\"Mohandas Karamchand Gandhi (/ˈɡɑːndi, ˈɡændi/;[2] Hindustani: [ˈmoːɦəndaːs ˈkərəmtʃənd ˈɡaːndʱi] (About this soundlisten);\n" +
-                "         2 October 1869 – 30 January 1948) was an Indian activist who was the leader of the Indian independence movement against British colonial rule.[3]\n" +
-                "         Employing nonviolent civil disobedience, Gandhi led India to independence and inspired movements for civil rights and freedom across the world.\n" +
-                "         The honorific Mahātmā (Sanskrit: \\\"high-souled\\\", \\\"venerable\\\")[4] was applied to him first in 1914 in South Africa[5] and is now used worldwide.\n" +
-                "         In India, he was also called Bapu, a term that he preferred[6] (Gujarati: endearment for father,[7] papa[7][8]), and Gandhi ji, and is known as the Father of the\n" +
-                "         Nation.[9][10]\\n\" + \"\\n\" + \"Born and raised in a Hindu family in coastal Gujarat, western India, and trained in law at the Inner Temple, London, Gandhi first\n" +
-                "         employed nonviolent civil disobedience as an expatriate lawyer in South Africa, in the resident Indian community's struggle for civil rights. After his return\n" +
-                "         to India in 1915, he set about organising peasants,  farmers, and urban labourers to protest against excessive land-tax and discrimination.\n" +
-                "         Assuming leadership of the Indian National Congress in 1921, Gandhi led nationwide campaigns for various social causes and for achieving Swaraj or\n" +
-                "         self-rule.[11]\\n\" + \"\\n\" + \"Gandhi led Indians in challenging the British-imposed salt tax with the 400 km (250 mi) Dandi Salt March in 1930, and\n" +
-                "         later in calling for the British to Quit India in 1942. He was imprisoned for many years, upon many occasions, in both South Africa and India.\n" +
-                "         He lived modestly in a self-sufficient residential community and wore the traditional Indian dhoti\n" +
-                "o assassinated Gandhi on 30 January 1948 by firing three bullets into his chest.[15\""
+      //  Log.d("IndexOf", "${comment.indexOf(',').toString()} ")
+        if (comment.indexOf(',') != -1){
+            //Log.d("Test indexof" , "${comment.substring(0,comment.indexOf(','))}")
+            mDialogView.TextAlertDetail.setText("${comment.substring(0,comment.indexOf(','))}\n${address}\n\n${latitude} ${longitude} ")
+        }else if (comment.indexOf(',') == -1){
+            mDialogView.TextAlertDetail.setText("${comment}\n${address}\n\n${latitude} ${longitude} ")
+        }
 
-        )
+
+        mDialogView.TextAlertComment.setText(splitComment(comment))
+
+
 
         mDialogView.TextAlertComment.setMovementMethod(ScrollingMovementMethod());
 
-
         val mAlertDialog = mBuilder.show()
-
+        val currentTime = LocalDateTime.now().toString().substring(11,16)
         mDialogView.button1.setOnClickListener{
             state = false
             map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address)).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             mAlertDialog.dismiss()
+
+
+            if (mDialogView.Comment.text.isNotEmpty()){
+              //  Log.d("Comment","not Null")
+                putRequest(id,userName,topic,comment+",${currentTime};${mDialogView.Comment.text}",(rating.toInt()+1).toString(),latitude,longitude)
+            }else{
+                //Log.d("Comment","Null")
+                putRequest(id,userName,topic,comment,(rating.toInt()+1).toString(),latitude,longitude)
+            }
         }
         mDialogView.button2.setOnClickListener{
             state = false
@@ -677,15 +694,32 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 Log.d("Err GetAlert LatLng()",e.message.toString())
             }
             map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address)).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            if (mDialogView.Comment.text.isNotEmpty()){
+                //Log.d("Comment","not Null")
+                putRequest(id,userName,topic,comment+",${currentTime};${mDialogView.Comment.text}",rating,latitude,longitude)
+            }
             mAlertDialog.dismiss()
         }
 
+    }
+    private fun splitComment(comment:String): String {
+        val delim = ","
+        val split = comment.split(delim)
+        var strComment = ""
+        for (str in split){
 
+            if (str.contains(";") == true){
 
+                strComment+="${str.substring(0,5)} ${str.substring(6,str.length)}\n"
+            }
 
+        }
 
+        return strComment
 
     }
+
+
 
 
 
