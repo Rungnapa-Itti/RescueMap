@@ -93,15 +93,23 @@
                 android:spinnerMode="dropdown" />
 
         </FrameLayout>
+        <Button
+            android:id="@+id/selectNewLocation"
+            android:layout_width="150dp"
+            android:layout_height="38dp"
+            android:layout_marginLeft="235dp"
+            android:layout_marginTop="-400dp"
+            android:background="@drawable/addbut_bg"
+            android:text="เลือกตำแหน่งใหม่" />
 
         <Button
             android:id="@+id/buttonNewLocation"
             android:layout_width="126dp"
             android:layout_height="38dp"
             android:layout_marginLeft="250dp"
-            android:layout_marginTop="-400dp"
+            android:layout_marginTop="300dp"
             android:background="@drawable/addbut_bg"
-            android:text="เลือกใหม่" />
+            android:text="ตกลง" />
 
 
 

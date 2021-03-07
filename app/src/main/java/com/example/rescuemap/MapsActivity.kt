@@ -2,7 +2,6 @@ package com.example.rescuemap
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -14,9 +13,12 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -148,12 +150,11 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
 
         buttonAdd.setOnClickListener {
-            val addBut = Intent(this, AddPlaceActivity::class.java)
+            val addBut = Intent(this@MapsActivity,AddPlaceActivity::class.java)
+            addBut.putExtra("list",currentLoc)
+            addBut.putExtra("myLat",getLatitude().toString())
+            addBut.putExtra("myLng",getLongitude().toString())
             startActivity(addBut)
-
-            val currentLoc2 = Intent(this@MapsActivity,AddPlaceActivity::class.java)
-            currentLoc2.putExtra("list",currentLoc)
-            startActivity(currentLoc2)
         }
 
     }
@@ -381,6 +382,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         map.addMarker(markerOptions)
         setLatitudeAndLongitude(location)
         getAddress(location)
+
 
         //14-01-64
        // getRequest()

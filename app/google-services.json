@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "7887374860",
+    "project_id": "rescuemap-c4fc4",
+    "storage_bucket": "rescuemap-c4fc4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7887374860:android:a1924d6fac2b40261b7c29",
+        "android_client_info": {
+          "package_name": "com.example.rescuemap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "7887374860-t6t1l47breinkadj63gmi8gmspeos85p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rescuemap",
+            "certificate_hash": "eafa0c32ef68e032a38320e99107448b70591baa"
+          }
+        },
+        {
+          "client_id": "7887374860-2e6eng9cq3soa66en69oo948ka5pvbf6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzgWYUODPCNP1cxtQtG0cDHeoOHwZH2tE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "7887374860-2e6eng9cq3soa66en69oo948ka5pvbf6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
