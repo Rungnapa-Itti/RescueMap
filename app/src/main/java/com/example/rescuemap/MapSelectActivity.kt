@@ -80,6 +80,7 @@ class MapSelectActivity : AppCompatActivity(), OnMapReadyCallback,
             //Setting a dynamic title at runtime. Here, it displays the current time.
             actionBar.setTitle(dynamicTitle)
             actionBar.setBackgroundDrawable(colorDrawable);
+            actionBar.setDisplayHomeAsUpEnabled(true)
 
         }
         //End of dynamic title code----------------------
@@ -95,8 +96,10 @@ class MapSelectActivity : AppCompatActivity(), OnMapReadyCallback,
     }
 
 
-
-
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
 
 
     /**

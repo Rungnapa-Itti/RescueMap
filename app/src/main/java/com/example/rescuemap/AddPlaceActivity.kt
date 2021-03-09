@@ -3,6 +3,7 @@ package com.example.rescuemap
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
@@ -20,12 +22,14 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.rescuemap.DataServer.DataItem
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_add_place.*
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 import java.lang.reflect.Type
 import java.text.DecimalFormat
 import java.time.LocalDateTime
@@ -39,6 +43,9 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
     private var MyLongitude: Double? = null
     private var Mylatitude: Double? = null
     var listLoc :MutableList<String> = ArrayList()
+    private var selectedLat: Double? = null
+    private var selectedLng: Double? = null
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +91,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
 
         val adapterLoc :ArrayAdapter<String> = ArrayAdapter(this,R.layout.support_simple_spinner_dropdown_item,listLoc)
         spinnerLocation.adapter = adapterLoc
+        spinnerLocation.onItemSelectedListener = this
 
         val adapterPlaceName :ArrayAdapter<String> = ArrayAdapter(this,R.layout.support_simple_spinner_dropdown_item,listPlaceName)
         spinnerPlaceName.adapter = adapterPlaceName
@@ -101,18 +109,13 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
             val colorDrawable = ColorDrawable(Color.parseColor("#db5a6b"))
             //Setting a dynamic title at runtime. Here, it displays the current time.
             actionBar.setTitle(dynamicTitle)
-            actionBar.setBackgroundDrawable(colorDrawable);
+            actionBar.setBackgroundDrawable(colorDrawable)
+            actionBar.setDisplayHomeAsUpEnabled(true)
 
         }
         //End of dynamic title code----------------------
 
         buttonNewLocation.setOnClickListener {
-
-//
-//            val currentLoc2 = Intent(this@MapsActivity,AddPlaceActivity::class.java)
-//            currentLoc2.putExtra("list",currentLoc)
-//            startActivity(currentLoc2)
-
             postRequest(topicName, editPlaceDetail.text.toString())
             val addBut = Intent(this@AddPlaceActivity, MapsActivity::class.java)
             startActivity(addBut)
@@ -124,14 +127,50 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("Not yet implemented")
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val text: String = parent?.getItemAtPosition(position).toString()
+//        val text: String = parent?.getItemAtPosition(position).toString()
+        val text: String = spinnerPlaceName.selectedItem.toString()
+        val locSelect = spinnerLocation.selectedItem.toString()
         topicName = text
+        Log.e("LocSelect",locSelect)
 //        Log.e("testSelect",topicName)
+        Log.d("splitItem",splitSelectedItem(locSelect))
+        getLocationFromAddress(splitSelectedItem(locSelect))
+        Log.d("LatSelect",selectedLat.toString())
+        Log.d("LngSelect",selectedLng.toString())
+        val selectedLoc = Intent(this@AddPlaceActivity,MapsActivity::class.java)
+        selectedLoc.putExtra("selectedLat",selectedLat)
+        selectedLoc.putExtra("selectedLng",selectedLng)
+        setLatitudeAndLongitude(selectedLat.toString(),selectedLng.toString())
+    }
+
+    private fun splitSelectedItem(item:String): String {
+        val delim = "("
+        val split = item.split(delim)
+        var strSelected = ""
+        var strTemp = ""
+        for (str in split){
+            if (str.contains(")") == true){
+                strTemp = "${str.substringAfter('(')}\n"
+                strSelected = "${strTemp.substringBefore(')')}\n"
+            }
+            else{
+                strSelected = item
+            }
+
+        }
+
+        return strSelected
+
     }
 
     private fun CalculationByDistance(StartP: LatLng, EndP: LatLng): Double {
@@ -160,8 +199,17 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         return kmInDec
     }
 
-    private fun getAddress(lat: LatLng): String? {
+    private fun getLocationFromAddress(addr: String){
+        val geocoder = Geocoder(this)
+//        List<Address> addresses
+        var addresses = geocoder.getFromLocationName(addr,1)
+        if(addresses.size > 0) {
+            selectedLat= addresses.get(0).getLatitude()
+            selectedLng= addresses.get(0).getLongitude()
+        }
+    }
 
+    private fun getAddress(lat: LatLng): String? {
 
         val geocoder = Geocoder(this)
         val list = geocoder.getFromLocation(lat.latitude, lat.longitude, 1)
@@ -170,7 +218,6 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         //for search places
         return list[0].getAddressLine(0)
     }
-
     private fun setLatitudeAndLongitude(lat: String, lng: String) {
         Mylatitude = lat.toDouble()
         MyLongitude = lng.toDouble()
@@ -187,6 +234,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
 
         return MyLongitude
     }
+
     private fun getRequest() {
         val queue = Volley.newRequestQueue(this)
         val url = "http://10.0.2.2:8081/messages"
@@ -259,8 +307,6 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         val queue = Volley.newRequestQueue(this)
         val postData = JSONObject()
         val currentDate = LocalDateTime.now().toString().substring(0, 16)
-        val newLat=intent.getStringExtra("newLat")
-        val newLng=intent.getStringExtra("newLng")
 
         try {
             postData.put("id", currentDate)
@@ -268,8 +314,8 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
             postData.put("topic", topic)
             postData.put("comment", comment)
             postData.put("rating", "0")
-            postData.put("latitude", newLat)
-            postData.put("longitude", newLng)
+            postData.put("latitude", getLatitude().toString())
+            postData.put("longitude", getLongitude().toString())
         } catch (e: JSONException) {
             e.printStackTrace()
         }

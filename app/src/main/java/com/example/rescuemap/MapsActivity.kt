@@ -89,7 +89,9 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     var listAlerted = mutableListOf<String>()
     var queue = mutableListOf<String>()
     var currentLoc: String? = null
-
+    private var markerLat: Double? = null
+    private var markerLng: Double? = null
+    var stateClick = false
 
 
     override  fun onCreate(savedInstanceState: Bundle?) {
@@ -156,6 +158,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             addBut.putExtra("myLng",getLongitude().toString())
             startActivity(addBut)
         }
+
 
     }
     // for toggle menu slide
@@ -252,6 +255,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             }
             map.addPolyline(lineOption)
         }
+
+
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -388,7 +393,25 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
        // getRequest()
     }
 
-    override fun onMarkerClick(p0: Marker?) = false
+    override fun onMarkerClick(marker: Marker): Boolean {
+        Log.d("test click marker", marker.title)
+        getLocationFromAddress(marker.title)
+        stateClick = true
+        Log.d("test state marker", stateClick.toString())
+//        getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude,item.id,item.userName,item.rating)
+        getRequest()
+        return false
+    }
+
+    private fun getLocationFromAddress(addr: String){
+        val geocoder = Geocoder(this)
+//        List<Address> addresses
+        var addresses = geocoder.getFromLocationName(addr,1)
+        if(addresses.size > 0) {
+            markerLat= addresses.get(0).getLatitude()
+            markerLng= addresses.get(0).getLongitude()
+        }
+    }
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -602,6 +625,12 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             try {
                 val kmInDec = calculate(item.latitude.toDouble(),item.longitude.toDouble())
 
+                if(item.latitude == markerLat.toString() && stateClick == true){
+                    val list = geocoder.getFromLocation(item.latitude.toDouble(), item.longitude.toDouble(), 1)
+                    getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude,item.id,item.userName,item.rating)
+                    stateClick = false
+                    Log.d("test state marker", stateClick.toString())
+                }
                 if (kmInDec <= 1 ) {
                         //alert isn't open and Latitude Longitude not null and this location never open alert
                     if (state == false && getLatitude() != null && getLongitude() != null && listAlerted.contains(content) == false) {
