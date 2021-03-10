@@ -45,6 +45,9 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
     var listLoc :MutableList<String> = ArrayList()
     private var selectedLat: Double? = null
     private var selectedLng: Double? = null
+    var currLoc2: String? = null
+    private var currLat: Double?= null
+    private var currLng: Double?= null
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -60,6 +63,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         val newLat=intent.getStringExtra("newLat")
         val newLng=intent.getStringExtra("newLng")
         val selectedLoc=intent.getStringExtra("selectedLoc")
+        currLoc2 = intent.getStringExtra("list")
 
         if (newLat == null){
             myLat= intent.getStringExtra("myLat").toString()
@@ -147,9 +151,20 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         getLocationFromAddress(splitSelectedItem(locSelect))
         Log.d("LatSelect",selectedLat.toString())
         Log.d("LngSelect",selectedLng.toString())
-        val selectedLoc = Intent(this@AddPlaceActivity,MapsActivity::class.java)
-        selectedLoc.putExtra("selectedLat",selectedLat)
-        selectedLoc.putExtra("selectedLng",selectedLng)
+//        var currLat= intent.getStringExtra("currLat")
+//        Log.d("currLat",currLat.toString())
+
+        getLocationFromAddressForCurrent(currLoc2.toString())
+        Log.d("currLoc2",currLoc2.toString())
+        Log.d("currLat",currLat.toString())
+        Log.d("currLng",currLng.toString())
+        val selectedLocAc = Intent(this@AddPlaceActivity,MapsActivity::class.java)
+        selectedLocAc.putExtra("selectedLat",selectedLat.toString())
+        selectedLocAc.putExtra("selectedLng",selectedLng.toString())
+        if((selectedLng != currLng) && (selectedLng != currLng) && currLoc2 != null){
+//            selectedLocAc.putExtra("stateSelectDropdown",stateSelectDropdown)
+            startActivity(selectedLocAc)
+        }
         setLatitudeAndLongitude(selectedLat.toString(),selectedLng.toString())
     }
 
@@ -201,11 +216,18 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
 
     private fun getLocationFromAddress(addr: String){
         val geocoder = Geocoder(this)
-//        List<Address> addresses
         var addresses = geocoder.getFromLocationName(addr,1)
         if(addresses.size > 0) {
             selectedLat= addresses.get(0).getLatitude()
             selectedLng= addresses.get(0).getLongitude()
+        }
+    }
+    private fun getLocationFromAddressForCurrent(addr: String){
+        val geocoder = Geocoder(this)
+        var addresses = geocoder.getFromLocationName(addr,1)
+        if(addresses.size > 0) {
+            currLat= addresses.get(0).getLatitude()
+            currLng= addresses.get(0).getLongitude()
         }
     }
 

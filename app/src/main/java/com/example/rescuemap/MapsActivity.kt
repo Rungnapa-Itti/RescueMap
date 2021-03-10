@@ -92,7 +92,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     private var markerLat: Double? = null
     private var markerLng: Double? = null
     var stateClick = false
-
+    var stateSelectDropdown = false
 
     override  fun onCreate(savedInstanceState: Bundle?) {
 
@@ -385,6 +385,11 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
         map.addMarker(markerOptions)
         setLatitudeAndLongitude(location)
+//        currLat = location.latitude
+//        currLng = location.longitude
+//        val sendCurrLatLng = Intent(this@MapsActivity,AddPlaceActivity::class.java)
+//        sendCurrLatLng.putExtra("currLat",currLat.toString())
+//        sendCurrLatLng.putExtra("currLng",currLng.toString())
         getAddress(location)
 
 
@@ -625,13 +630,25 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
             try {
                 val kmInDec = calculate(item.latitude.toDouble(),item.longitude.toDouble())
+                val selectedLat= intent.getStringExtra("selectedLat").toString()
+                val selectedLng= intent.getStringExtra("selectedLng").toString()
 
+                // Alert from select dropdown in Add place page
+                if(item.latitude == selectedLat.toString() && stateSelectDropdown == false){
+                    val list = geocoder.getFromLocation(item.latitude.toDouble(), item.longitude.toDouble(), 1)
+                    stateSelectDropdown = true
+                    getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude,item.id,item.userName,item.rating)
+                }
+
+                // Alert from select marker
                 if(item.latitude == markerLat.toString() && stateClick == true){
                     val list = geocoder.getFromLocation(item.latitude.toDouble(), item.longitude.toDouble(), 1)
                     getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude,item.id,item.userName,item.rating)
                     stateClick = false
                     Log.d("test state marker", stateClick.toString())
                 }
+
+                // Default alert
                 if (kmInDec <= 1 ) {
                         //alert isn't open and Latitude Longitude not null and this location never open alert
                     if (state == false && getLatitude() != null && getLongitude() != null && listAlerted.contains(content) == false) {
