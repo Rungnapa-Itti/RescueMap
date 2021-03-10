@@ -404,7 +404,6 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
     private fun getLocationFromAddress(addr: String){
         val geocoder = Geocoder(this)
-//        List<Address> addresses
         var addresses = geocoder.getFromLocationName(addr,1)
         if(addresses.size > 0) {
             markerLat= addresses.get(0).getLatitude()
