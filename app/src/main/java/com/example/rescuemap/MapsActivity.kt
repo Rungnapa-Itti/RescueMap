@@ -394,22 +394,25 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
     override fun onMarkerClick(marker: Marker): Boolean {
         Log.d("test click marker", marker.title)
-        getLocationFromAddress(marker.title)
+//        getLocationFromAddress(marker.title)
         stateClick = true
         Log.d("test state marker", stateClick.toString())
+        markerLat = marker.position.latitude
+        markerLng = marker.position.longitude
 //        getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude,item.id,item.userName,item.rating)
         getRequest()
+        marker.position.latitude
         return false
     }
 
-    private fun getLocationFromAddress(addr: String){
-        val geocoder = Geocoder(this)
-        var addresses = geocoder.getFromLocationName(addr,1)
-        if(addresses.size > 0) {
-            markerLat= addresses.get(0).getLatitude()
-            markerLng= addresses.get(0).getLongitude()
-        }
-    }
+//    private fun getLocationFromAddress(addr: String){
+//        val geocoder = Geocoder(this)
+//        var addresses = geocoder.getFromLocationName(addr,1)
+//        if(addresses.size > 0) {
+//            markerLat= addresses.get(0).getLatitude()
+//            markerLng= addresses.get(0).getLongitude()
+//        }
+//    }
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1
