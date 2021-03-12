@@ -313,7 +313,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
      */
     override fun onMapReady(googleMap: GoogleMap) {
 
-
+        state = false
         map = googleMap
         // Add a marker in Sydney and move the camera
 //        val myPlace = LatLng(40.73, -73.99)
@@ -407,6 +407,17 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 //        getAlert(item.topic,item.comment,list[0].getAddressLine(0).toString(),item.latitude,item.longitude,item.id,item.userName,item.rating)
         getRequest()
         marker.position.latitude
+
+        if (mSearchText!!.text != null){
+            try {
+                val sourceLocation = LatLng(getLatitude()!!.toDouble(), getLongitude()!!.toDouble())
+                val destLocation = LatLng(marker.position.latitude,marker.position.longitude)
+                val URL = getDirectionURL(sourceLocation,destLocation)
+                GetDirection(URL).execute()
+            }catch (e:Exception){
+                Log.d("Err GetAlert LatLng()",e.message.toString())
+            }
+        }
         return false
     }
 
@@ -509,10 +520,13 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                                 //Add marker to map
                                 map!!.addMarker(markerOptions)
 
+//
+
                             }
                             //move camera
                             map!!.moveCamera(CameraUpdateFactory.newLatLng(LatLng(Mylatitude!!,MyLongitude!!)))
                             map!!.animateCamera(CameraUpdateFactory.zoomTo(11f))
+
 
                         }
                     }
@@ -697,8 +711,9 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         val mDialogView = LayoutInflater.from(this).inflate(R.layout.showalert,null)
         val mBuilder = AlertDialog.Builder(this)
                 .setView(mDialogView)
-                .setTitle(topic)
 
+        mDialogView.topic.setText(topic)
+        mDialogView.topic.setPaintFlags(Paint.FAKE_BOLD_TEXT_FLAG);
         mDialogView.TextComment.setPaintFlags(Paint.FAKE_BOLD_TEXT_FLAG);
 
       //  Log.d("IndexOf", "${comment.indexOf(',').toString()} ")
@@ -749,6 +764,12 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             }
             mAlertDialog.dismiss()
         }
+        mDialogView.close.setOnClickListener{
+            state = false
+            mAlertDialog.dismiss()
+        }
+
+
 
     }
     private fun splitComment(comment:String): String {
