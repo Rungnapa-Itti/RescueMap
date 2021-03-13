@@ -335,7 +335,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
             postData.put("userName", "kapop")
             postData.put("topic", topic)
             postData.put("comment", comment)
-            postData.put("rating", "0")
+            postData.put("rating", "")
             postData.put("latitude", getLatitude().toString())
             postData.put("longitude", getLongitude().toString())
         } catch (e: JSONException) {

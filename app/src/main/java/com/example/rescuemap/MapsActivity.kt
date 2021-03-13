@@ -94,6 +94,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     var stateClick = false
     var stateSelectDropdown = false
 
+    var userName = ""
+
     override  fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -148,6 +150,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 getRequest()
 
             }
+
+        setUsername("Dream")
 
 
         buttonAdd.setOnClickListener {
@@ -408,7 +412,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         getRequest()
         marker.position.latitude
 
-        if (mSearchText!!.text != null){
+        if (mSearchText!!.text.isNotEmpty()){
             try {
                 val sourceLocation = LatLng(getLatitude()!!.toDouble(), getLongitude()!!.toDouble())
                 val destLocation = LatLng(marker.position.latitude,marker.position.longitude)
@@ -719,13 +723,15 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
       //  Log.d("IndexOf", "${comment.indexOf(',').toString()} ")
         if (comment.indexOf(',') != -1){
             //Log.d("Test indexof" , "${comment.substring(0,comment.indexOf(','))}")
-            mDialogView.TextAlertDetail.setText("${comment.substring(0,comment.indexOf(','))}\n${address}\n\n${latitude} ${longitude} ")
+            mDialogView.TextAlertDetail.setText("${comment.substring(0,comment.indexOf(','))}\n${address} ")
         }else if (comment.indexOf(',') == -1){
             mDialogView.TextAlertDetail.setText("${comment}\n${address}\n\n${latitude} ${longitude} ")
         }
 
 
         mDialogView.TextAlertComment.setText(splitComment(comment))
+        var countRating = findUserInRating(rating)
+        mDialogView.rating.setText("มีผู้ยืนยันเหตุการณ์ทั้งหมด : ${countRating} คน")
 
 
 
@@ -734,17 +740,50 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         val mAlertDialog = mBuilder.show()
         val currentTime = LocalDateTime.now().toString().substring(11,16)
         mDialogView.button1.setOnClickListener{
-            state = false
+           // state = false
             map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address)).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-            mAlertDialog.dismiss()
+            //mAlertDialog.dismiss()
 
 
             if (mDialogView.Comment.text.isNotEmpty()){
               //  Log.d("Comment","not Null")
-                putRequest(id,userName,topic,comment+",${currentTime};${mDialogView.Comment.text}",(rating.toInt()+1).toString(),latitude,longitude)
+                if (rating.contains(getUsername()) == true){
+                    mDialogView.errMessage.setText("ไม่สามารถยืนยันเหตุการณ์ได้เนื่องจากผู้ใช้ได้ทำการยืนยันไปแล้ว")
+                    //putRequest(id,userName,topic,comment+",${currentTime};${mDialogView.Comment.text}",rating,latitude,longitude)
+                }else {
+
+                   // map.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(),longitude.toDouble())).title(address)).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    putRequest(
+                        id,
+                        userName,
+                        topic,
+                        comment + ",${currentTime};${mDialogView.Comment.text}",
+                        rating + ";${getUsername()}",
+                        latitude,
+                        longitude
+                    )
+                    mAlertDialog.dismiss()
+                    state = false
+                }
             }else{
                 //Log.d("Comment","Null")
-                putRequest(id,userName,topic,comment,(rating.toInt()+1).toString(),latitude,longitude)
+                if (rating.contains(getUsername()) == true){
+                    mDialogView.errMessage.setText("ไม่สามารถยืนยันเหตุการณ์ได้เนื่องจากผู้ใช้ได้ทำการยืนยันไปแล้ว")
+                   // putRequest(id,userName,topic,comment+",${currentTime};${mDialogView.Comment.text}",rating,latitude,longitude)
+                } else {
+
+                    putRequest(
+                        id,
+                        userName,
+                        topic,
+                        comment,
+                        rating + ";${getUsername()}",
+                        latitude,
+                        longitude
+                    )
+                    mAlertDialog.dismiss()
+                    state = false
+                }
             }
         }
         mDialogView.button2.setOnClickListener{
@@ -788,6 +827,28 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         return strComment
 
     }
+
+    private fun setUsername(paramsName : String){
+        userName = paramsName
+    }
+
+    private fun getUsername():String{
+        return userName
+    }
+
+    private fun findUserInRating(rating: String) :Int{
+        val split = rating.split(";")
+        var count = 0
+        for (str in split) {
+            if (str != "") {
+                count += 1
+                Log.d("Test rating", str + " ${count}")
+            }
+        }
+        return count
+    }
+
+
 
 
 
