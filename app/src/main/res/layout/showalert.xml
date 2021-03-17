@@ -48,15 +48,15 @@
         android:id="@+id/TextComment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="  ความคิดเห็นเพ่ิมเติมเกี่ยวกับเหตุการณ์"
-        android:layout_marginTop="30dp"
+        android:text="ความคิดเห็นเพิ่มเติมเกี่ยวกับเหตุการณ์"
+        android:layout_marginTop="10dp"
         android:textSize="15dp"
         />
 
     <TextView
         android:id="@+id/TextAlertComment"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
+        android:layout_height="120dp"
         android:scrollbars="vertical"
         android:layout_marginTop="10dp"
 
@@ -77,6 +77,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textColor="#ba160c"
+        android:gravity="center"
         >
 
     </TextView>
@@ -91,7 +92,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/button1"
             android:layout_marginLeft="70dp"
-            android:text="ยืนยัันเหตุการณ์"
+            android:text="ยืนยันเหตุการณ์"
             android:textColor="@color/white"
             android:background="#db5a6b"
 

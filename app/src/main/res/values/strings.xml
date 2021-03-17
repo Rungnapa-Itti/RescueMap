@@ -4,4 +4,17 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string-array name="PhoneNumber">
+        <item name="number">"เหตุด่วนเหตุร้าย      191"</item>
+        <item name="number">"เหตุไฟไหม้          199"</item>
+        <item name="number">"ตำรวจท่องเที่ยว     1155"</item>
+        <item name="number">"หน่วยแพทย์วชิรฯ     1154"</item>
+        <item name="number">"จส.100           1137"</item>
+        <item name="number">"สายด่วนทางหลวง    1193"</item>
+        <item name="number">"เจ็บป่วยฉุกเฉิน      1669"</item>
+        <item name="number">"สายด่วนจราจร      1197"</item>
+    </string-array>
+    
+
 </resources>

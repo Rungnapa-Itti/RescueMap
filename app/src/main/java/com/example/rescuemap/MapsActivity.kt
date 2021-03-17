@@ -267,8 +267,11 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         if (id == R.id.nav_map){
             fragment = MapFragment()
 
-        }else if (id == R.id.nav_place){
-            fragment = SearchPlacesFragment()
+        }else if (id == R.id.nav_call){
+            //fragment = SearchPlacesFragment()
+            val buttonCall = Intent(this@MapsActivity,PhoneNumberActivity::class.java)
+            startActivity(buttonCall)
+
         }
 
         if (fragment != null){
@@ -383,18 +386,20 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
     private fun placeMarkerOnMap(location: LatLng) {
 
-        val markerOptions = MarkerOptions().position(location)
-        val titleStr = getAddress(location)
-        markerOptions.title(titleStr)
 
-        map.addMarker(markerOptions)
-        setLatitudeAndLongitude(location)
+            val markerOptions = MarkerOptions().position(location)
+            val titleStr = "TEST"//getAddress(location)
+            markerOptions.title(titleStr)
+
+            map.addMarker(markerOptions)
+            setLatitudeAndLongitude(location)
 //        currLat = location.latitude
 //        currLng = location.longitude
 //        val sendCurrLatLng = Intent(this@MapsActivity,AddPlaceActivity::class.java)
 //        sendCurrLatLng.putExtra("currLat",currLat.toString())
 //        sendCurrLatLng.putExtra("currLng",currLng.toString())
-        getAddress(location)
+            //getAddress(location)
+
 
 
         //14-01-64
@@ -732,6 +737,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         mDialogView.TextAlertComment.setText(splitComment(comment))
         var countRating = findUserInRating(rating)
         mDialogView.rating.setText("มีผู้ยืนยันเหตุการณ์ทั้งหมด : ${countRating} คน")
+        mDialogView.rating.setPaintFlags(Paint.FAKE_BOLD_TEXT_FLAG);
 
 
 
@@ -768,7 +774,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             }else{
                 //Log.d("Comment","Null")
                 if (rating.contains(getUsername()) == true){
-                    mDialogView.errMessage.setText("ไม่สามารถยืนยันเหตุการณ์ได้เนื่องจากผู้ใช้ได้ทำการยืนยันไปแล้ว")
+                    mDialogView.errMessage.setText("ไม่สามารถยืนยันเหตุการณ์ได้เนื่องจากผู้ใช้ได้ทำการยืนยันเหตุการณ์นี้ไปแล้ว")
                    // putRequest(id,userName,topic,comment+",${currentTime};${mDialogView.Comment.text}",rating,latitude,longitude)
                 } else {
 
