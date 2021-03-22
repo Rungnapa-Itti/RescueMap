@@ -40,8 +40,22 @@
                 android:background="#db5a6b"
                 android:elevation="4dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                map:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                />
+                map:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+<!--                <Button-->
+<!--                    android:id="@+id/logout"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:text="Logout"-->
+<!--                    android:textSize="10sp"-->
+<!--                    android:padding="10dp"-->
+<!--                    android:layout_marginLeft="200dp"-->
+<!--                    android:layout_marginTop="0dp"-->
+<!--                    android:foreground="?android:attr/selectableItemBackground"-->
+<!--                    android:textColor="@android:color/white"-->
+<!--                    android:background="#db5a6b" />-->
+            </androidx.appcompat.widget.Toolbar>
+
 <!--            <Button-->
 <!--                android:layout_width="100dp"-->
 <!--                android:layout_height="50dp"-->
@@ -90,7 +104,18 @@
                 android:layout_marginLeft="20dp"
                 android:text=""
                 android:background="@drawable/addbut_bg"/>
-
+<!--            <Button-->
+<!--            android:id="@+id/logout"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:text="Logout"-->
+<!--            android:textSize="10sp"-->
+<!--            android:padding="10dp"-->
+<!--            android:layout_marginLeft="300dp"-->
+<!--            android:layout_marginTop="0dp"-->
+<!--            android:foreground="?android:attr/selectableItemBackground"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:background="#db5a6b" />-->
         </FrameLayout>
 
 

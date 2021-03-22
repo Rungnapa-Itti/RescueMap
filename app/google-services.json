@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "7887374860",
-    "project_id": "rescuemap-c4fc4",
-    "storage_bucket": "rescuemap-c4fc4.appspot.com"
+    "project_number": "91204530917",
+    "project_id": "rescuemap-1616141997315",
+    "storage_bucket": "rescuemap-1616141997315.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:7887374860:android:a1924d6fac2b40261b7c29",
+        "mobilesdk_app_id": "1:91204530917:android:2f4d0e5c7b0f8868679a0c",
         "android_client_info": {
           "package_name": "com.example.rescuemap"
         }
       },
       "oauth_client": [
         {
-          "client_id": "7887374860-t6t1l47breinkadj63gmi8gmspeos85p.apps.googleusercontent.com",
+          "client_id": "91204530917-nhf1pepi2hp36eqnrljn0dk6fa8vtjc9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.rescuemap",
-            "certificate_hash": "eafa0c32ef68e032a38320e99107448b70591baa"
+            "certificate_hash": "be222d7029157da7e5b99ad9ebc4fd7a1922d9fc"
           }
         },
         {
-          "client_id": "7887374860-2e6eng9cq3soa66en69oo948ka5pvbf6.apps.googleusercontent.com",
+          "client_id": "91204530917-df7el8u6dlnescs8u4ej3i8vdobpt59r.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCzgWYUODPCNP1cxtQtG0cDHeoOHwZH2tE"
+          "current_key": "AIzaSyB10xyuIBRRbw9-pkcn2SCwCkGuL62ciME"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "7887374860-2e6eng9cq3soa66en69oo948ka5pvbf6.apps.googleusercontent.com",
+              "client_id": "91204530917-df7el8u6dlnescs8u4ej3i8vdobpt59r.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GoogleLogInLogOut">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F89595"
+        />
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="87dp"
+        android:layout_marginTop="45dp"
+        android:src="@drawable/ic_alarm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/view" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:text="RescueMap"
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="@+id/view"
+        android:gravity="center_horizontal" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:layout_marginTop="220dp"
+        android:background="#d3d3d3"
+        app:cardCornerRadius="50dp"
+        app:cardElevation="60dp"
+        app:layout_constraintTop_toTopOf="@+id/view">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="30dp"
+            android:text="Login"
+            android:textSize="50sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="85dp"
+            android:layout_marginLeft="35dp"
+            android:text="Please login to continue"
+            android:textSize="17sp"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="normal"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="200dp"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/ic_gmail_color" />
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="315dp"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/ic_facebook__1_" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="100dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/googlesignin"
+                android:layout_width="266dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="90dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="30dp">
+
+                <LinearLayout
+                    android:layout_width="262dp"
+                    android:layout_height="54dp"
+                    android:background="#BB001B"
+                    android:padding="10dp">
+
+
+                    <TextView
+                        android:layout_width="217dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="17dp"
+                        android:text="Continue with Google"
+                        android:textAlignment="center"
+                        android:textAllCaps="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/fbsignin"
+                android:layout_width="271dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginLeft="80dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="30dp">
+
+                <com.facebook.login.widget.LoginButton
+                    android:id="@+id/facebooksignin"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="0dp"
+                    android:textSize="20sp">
+                </com.facebook.login.widget.LoginButton>
+
+
+                <Button
+                    android:id="@+id/fb"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:background="#416BC1"
+                    android:onClick="onClick"
+                    android:text="Continue with Facebook"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

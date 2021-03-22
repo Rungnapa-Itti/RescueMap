@@ -95,12 +95,15 @@
         </FrameLayout>
         <Button
             android:id="@+id/selectNewLocation"
-            android:layout_width="150dp"
+            android:layout_width="154dp"
             android:layout_height="38dp"
             android:layout_marginLeft="235dp"
             android:layout_marginTop="-400dp"
-            android:background="@drawable/addbut_bg"
-            android:text="เลือกตำแหน่งใหม่" />
+            android:background="@drawable/round_button"
+            app:backgroundTint="@null"
+            android:textColor="@color/white"
+            android:text="เลือกตำแหน่งใหม่"
+            android:textStyle="bold"/>
 
         <Button
             android:id="@+id/buttonNewLocation"
@@ -108,8 +111,11 @@
             android:layout_height="38dp"
             android:layout_marginLeft="250dp"
             android:layout_marginTop="300dp"
-            android:background="@drawable/addbut_bg"
-            android:text="ตกลง" />
+            android:background="@drawable/round_button"
+            android:text="ตกลง"
+            app:backgroundTint="@null"
+            android:textColor="@color/white"
+            android:textStyle="bold"/>
 
 
 

@@ -48,6 +48,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
     var currLoc2: String? = null
     private var currLat: Double?= null
     private var currLng: Double?= null
+    var tempGoogleUsername: String? = null
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -56,7 +57,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         setContentView(R.layout.activity_add_place)
 
 
-        var listPlaceName = arrayListOf<String>("จราจรติดขัด", "ทะเลาะวิวาท", "ไฟไหม้", "น้ำท่วม")
+        var listPlaceName = arrayListOf<String>("จราจรติดขัด", "ทะเลาะวิวาท", "ไฟไหม้", "น้ำท่วม", "อื่นๆ")
 //        val currLoc=intent.getStringExtra("list")
         val myLat: String
         val myLng: String
@@ -109,7 +110,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         val actionBar: ActionBar? = supportActionBar
         if (actionBar != null) {
 //            val cal: Calendar = Calendar.getInstance()
-            val dynamicTitle: String = "Map"
+            val dynamicTitle: String = "RescueMap"
             val colorDrawable = ColorDrawable(Color.parseColor("#db5a6b"))
             //Setting a dynamic title at runtime. Here, it displays the current time.
             actionBar.setTitle(dynamicTitle)
@@ -122,6 +123,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         buttonNewLocation.setOnClickListener {
             postRequest(topicName, editPlaceDetail.text.toString())
             val addBut = Intent(this@AddPlaceActivity, MapsActivity::class.java)
+            addBut.putExtra("googleUsername1",tempGoogleUsername)
             startActivity(addBut)
         }
 
@@ -129,6 +131,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
             val selectBut = Intent(this@AddPlaceActivity,MapSelectActivity::class.java)
             startActivity(selectBut)
         }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -329,10 +332,13 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         val queue = Volley.newRequestQueue(this)
         val postData = JSONObject()
         val currentDate = LocalDateTime.now().toString().substring(0, 16)
+        val googleUserName= intent.getStringExtra("googleUsername2").toString()
+        Log.w("userAddPage",googleUserName)
+        tempGoogleUsername = googleUserName
 
         try {
             postData.put("id", currentDate)
-            postData.put("userName", "kapop")
+            postData.put("userName", googleUserName)
             postData.put("topic", topic)
             postData.put("comment", comment)
             postData.put("rating", "")

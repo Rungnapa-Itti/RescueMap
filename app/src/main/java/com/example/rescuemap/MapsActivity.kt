@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.location.Geocoder
 import android.location.Location
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
@@ -26,6 +27,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.android.volley.Request
@@ -37,6 +39,15 @@ import com.example.rescuemap.Common.Common
 import com.example.rescuemap.DataServer.DataItem
 import com.example.rescuemap.Model.MyPlaces
 import com.example.rescuemap.Remote.IGoogleAPIService
+import com.facebook.AccessToken
+import com.facebook.GraphRequest
+import com.facebook.HttpMethod
+import com.facebook.login.LoginManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -44,7 +55,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.Task
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_maps.*
@@ -62,7 +75,7 @@ import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
 
 
-open class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
 GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var map: GoogleMap
@@ -93,8 +106,18 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
     private var markerLng: Double? = null
     var stateClick = false
     var stateSelectDropdown = false
+    var personName: String? = null
+    val personGivenName: String? = null
+    val personFamilyName: String? = null
+    val personEmail: String? = null
+    val personId: String? = null
+    val personPhoto: Uri? = null
 
     var userName = ""
+    lateinit var mGoogleSignInClient: GoogleSignInClient
+    private val auth by lazy {
+        FirebaseAuth.getInstance()
+    }
 
     override  fun onCreate(savedInstanceState: Bundle?) {
 
@@ -150,8 +173,12 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 getRequest()
 
             }
+        personName = intent.getStringExtra("googleUsername1").toString()
+        Log.w("userMainPage",personName.toString())
 
-        setUsername("Dream")
+        setUsername(personName.toString())
+
+
 
 
         buttonAdd.setOnClickListener {
@@ -159,11 +186,27 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             addBut.putExtra("list",currentLoc)
             addBut.putExtra("myLat",getLatitude().toString())
             addBut.putExtra("myLng",getLongitude().toString())
+            addBut.putExtra("googleUsername2",personName)
             startActivity(addBut)
         }
 
+//        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//            .requestIdToken(getString(R.string.default_web_client_id))
+//            .requestEmail()
+//            .build()
+//        mGoogleSignInClient= GoogleSignIn.getClient(this,gso)
+//// pass the same server client ID used while implementing the LogIn feature earlier.
+//        logout.setOnClickListener {
+//            mGoogleSignInClient.signOut().addOnCompleteListener {
+//                val intent= Intent(this, GoogleLogInLogOut::class.java)
+//                startActivity(intent)
+//                finish()
+//            }
+//        }
+
 
     }
+
     // for toggle menu slide
     override fun onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)){
@@ -262,6 +305,8 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
     }
 
+
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         var id = item.itemId
         if (id == R.id.nav_map){
@@ -272,6 +317,30 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             val buttonCall = Intent(this@MapsActivity,PhoneNumberActivity::class.java)
             startActivity(buttonCall)
 
+        }else if (id == R.id.logout) {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+            mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+// pass the same server client ID used while implementing the LogIn feature earlier.
+            mGoogleSignInClient.signOut().addOnCompleteListener {
+                val intent = Intent(this, GoogleLogInLogOut::class.java)
+                startActivity(intent)
+                finish()
+            }
+            if (AccessToken.getCurrentAccessToken() != null) {
+                GraphRequest(
+                    AccessToken.getCurrentAccessToken(),
+                    "/me/permissions/",
+                    null,
+                    HttpMethod.DELETE,
+                    GraphRequest.Callback {
+                        AccessToken.setCurrentAccessToken(null)
+                        LoginManager.getInstance().logOut()
+                        finish()
+                    }).executeAsync()
+            }
         }
 
         if (fragment != null){
@@ -388,7 +457,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
 
             val markerOptions = MarkerOptions().position(location)
-            val titleStr = "TEST"//getAddress(location)
+            val titleStr = getAddress(location)
             markerOptions.title(titleStr)
 
             map.addMarker(markerOptions)
