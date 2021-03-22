@@ -144,9 +144,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             val mapFragment = supportFragmentManager
                     .findFragmentById(R.id.map) as SupportMapFragment
             mapFragment.getMapAsync(this)
-
-
-
+        
 
             // --- Init service
             mService = Common.googleApiService
