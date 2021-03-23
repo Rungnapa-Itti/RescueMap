@@ -120,6 +120,9 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         }
         //End of dynamic title code----------------------
 
+        val googleUserName= intent.getStringExtra("googleUsername2").toString()
+        Log.w("userAddPage",googleUserName)
+
         buttonNewLocation.setOnClickListener {
             postRequest(topicName, editPlaceDetail.text.toString())
             val addBut = Intent(this@AddPlaceActivity, MapsActivity::class.java)
@@ -129,6 +132,8 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
 
         selectNewLocation.setOnClickListener {
             val selectBut = Intent(this@AddPlaceActivity,MapSelectActivity::class.java)
+            selectBut.putExtra("googleUsername3",googleUserName)
+            Log.w("sendUserToSelectPage", googleUserName)
             startActivity(selectBut)
         }
 

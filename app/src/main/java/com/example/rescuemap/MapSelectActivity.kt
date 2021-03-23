@@ -85,11 +85,16 @@ class MapSelectActivity : AppCompatActivity(), OnMapReadyCallback,
         }
         //End of dynamic title code----------------------
 
+        val googleUserName= intent.getStringExtra("googleUsername3").toString()
+        Log.w("userSelectPage",googleUserName)
+
         buttonConfirm.setOnClickListener {
             val confirmBut = Intent(this@MapSelectActivity,AddPlaceActivity::class.java)
             confirmBut.putExtra("newLat",getLatitude().toString())
             confirmBut.putExtra("newLng",getLongitude().toString())
             confirmBut.putExtra("selectedLoc",selectedLoc)
+            confirmBut.putExtra("googleUsername2",googleUserName)
+
             startActivity(confirmBut)
         }
 
