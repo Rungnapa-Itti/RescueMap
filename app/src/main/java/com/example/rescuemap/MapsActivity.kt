@@ -860,7 +860,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             }
         }
         mDialogView.button2.setOnClickListener{
-            state = false
+
             try {
                 val sourceLocation = LatLng(getLatitude()!!.toDouble(), getLongitude()!!.toDouble())
                 val destLocation = LatLng(latitude.toDouble(),longitude.toDouble())
@@ -875,10 +875,12 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 putRequest(id,userName,topic,comment+",${currentTime};${mDialogView.Comment.text}",rating,latitude,longitude)
             }
             mAlertDialog.dismiss()
+            state = false
         }
         mDialogView.close.setOnClickListener{
-            state = false
+
             mAlertDialog.dismiss()
+            state = false
         }
 
 

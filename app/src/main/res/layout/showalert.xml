@@ -59,6 +59,7 @@
         android:layout_height="120dp"
         android:scrollbars="vertical"
         android:layout_marginTop="10dp"
+        android:background="@drawable/border_textview"
 
         />
 
@@ -67,7 +68,9 @@
         android:layout_height="40dp"
         android:layout_marginTop="10dp"
         android:hint="แสดงความคิดเห็น"
-        android:id="@+id/Comment">
+        android:id="@+id/Comment"
+        android:background="@drawable/border_textview"
+        >
 
     </EditText>
 
@@ -78,6 +81,7 @@
         android:layout_marginTop="10dp"
         android:textColor="#ba160c"
         android:gravity="center"
+
         >
 
     </TextView>
@@ -91,10 +95,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/button1"
-            android:layout_marginLeft="70dp"
+            android:layout_marginLeft="50dp"
             android:text="ยืนยันเหตุการณ์"
-            android:textColor="@color/white"
-            android:background="#db5a6b"
+            android:textColor="#2acf51"
+            android:background="@drawable/border"
+            android:drawableLeft="@drawable/ic_like"
 
 
             />
@@ -104,8 +109,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/button2"
             android:text="แสดงเส้นทาง"
-            android:textColor="@color/white"
-            android:background="#db5a6b"
+            android:textColor="#2acf51"
+            android:background="@drawable/border"
+            android:drawableLeft="@drawable/ic_navigation"
             />
     </LinearLayout>
 
