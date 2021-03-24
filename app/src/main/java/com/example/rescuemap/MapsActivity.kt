@@ -168,7 +168,9 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 println("Hello2!")
                 getRequest()
 
+
             }
+
         personName = intent.getStringExtra("googleUsername1").toString()
         Log.w("userMainPage",personName.toString())
 
@@ -702,6 +704,19 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         queue.add(putRequest)
     }
 
+    private fun DeleteRequest(id:String){
+        val queue = Volley.newRequestQueue(this)
+        val url = "http://10.0.2.2:8081/messages/delete/${id}"
+
+        val request = StringRequest(Request.Method.DELETE, url, Response.Listener { response ->
+            Log.d("Delete request:","ok")
+        }, Response.ErrorListener { error -> println("Delete error $error") })
+        queue.add(request)
+
+
+
+
+    }
 
 
     fun recreateAcitivity(item: MenuItem) {
@@ -714,6 +729,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
 
 
         for (item in data!!){
+            checkTimeDelete(item.id)
             Log.d("TEST","${item.latitude} ${item.longitude}")
             var content = "${item.latitude} ${item.longitude} ${item.topic}"
 
@@ -797,7 +813,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
             //Log.d("Test indexof" , "${comment.substring(0,comment.indexOf(','))}")
             mDialogView.TextAlertDetail.setText("${comment.substring(0,comment.indexOf(','))}\n${address} ")
         }else if (comment.indexOf(',') == -1){
-            mDialogView.TextAlertDetail.setText("${comment}\n${address}\n\n${latitude} ${longitude} ")
+            mDialogView.TextAlertDetail.setText("${comment}\n${address}\n ")
         }
 
 
@@ -922,6 +938,21 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
         }
         return count
     }
+
+    private fun checkTimeDelete(id:String){
+        var timeAmount = id.substring(17,22)
+        val currentDate = LocalDateTime.now().toString().substring(11, 16)
+//        Log.d("CurrentDate","${LocalDateTime.now().toString()} ${currentDate} ")
+//        Log.d("CheckTimeAmount","${id} ${timeAmount}")
+        //Log.d("CurrentData","${currentDate} ${currentDate.substring(0,2)} ${currentDate.substring(3,5)}") //15:29 15 29
+        if (currentDate.substring(0,2).toInt() >= timeAmount.substring(0,2).toInt()
+                && currentDate.substring(3,5).toInt() >= timeAmount.substring(3,5).toInt()){
+            Log.d("CheckTimeDelete"," ${id} true -> delete")
+            DeleteRequest(id)
+        }
+    }
+
+
 
 
 

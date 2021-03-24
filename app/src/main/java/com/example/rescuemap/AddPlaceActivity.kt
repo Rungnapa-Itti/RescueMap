@@ -32,6 +32,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.lang.reflect.Type
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.*
 
@@ -49,6 +50,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
     private var currLat: Double?= null
     private var currLng: Double?= null
     var tempGoogleUsername: String? = null
+    var timeAmount:Int = 60
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -124,7 +126,10 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         Log.w("userAddPage",googleUserName)
 
         buttonNewLocation.setOnClickListener {
-            postRequest(topicName, editPlaceDetail.text.toString())
+            var nextTime = calculateNextTime(getTimeAmountPlace())
+            Log.d("NextTime",nextTime)
+
+            postRequest(topicName, editPlaceDetail.text.toString(),nextTime)
             val addBut = Intent(this@AddPlaceActivity, MapsActivity::class.java)
             addBut.putExtra("googleUsername1",tempGoogleUsername)
             startActivity(addBut)
@@ -151,6 +156,15 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 //        val text: String = parent?.getItemAtPosition(position).toString()
         val text: String = spinnerPlaceName.selectedItem.toString()
+        Log.d("spinnerPlaceName",text)
+        if(text.equals("จราจรติดขัด") || text.equals("ทะเลาะวิวาท") ){
+            setTimeAmountPlace(60) // 1 hour
+        }else if (text.equals("ไฟไหม้") || text.equals("น้ำท่วม")){
+            setTimeAmountPlace(180) // 3 hour
+        }else{
+            setTimeAmountPlace(2) // 1 hour (อื่นๆ)
+        }
+
         val locSelect = spinnerLocation.selectedItem.toString()
         topicName = text
         Log.e("LocSelect",locSelect)
@@ -332,7 +346,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         return 0.0
     }
 
-    private fun postRequest(topic: String, comment: String) {
+    private fun postRequest(topic: String, comment: String,nextTime: String) {
         val postUrl = "http://10.0.2.2:8081/messages"
         val queue = Volley.newRequestQueue(this)
         val postData = JSONObject()
@@ -342,7 +356,7 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
         tempGoogleUsername = googleUserName
 
         try {
-            postData.put("id", currentDate)
+            postData.put("id", currentDate+"-${nextTime}")
             postData.put("userName", googleUserName)
             postData.put("topic", topic)
             postData.put("comment", comment)
@@ -367,6 +381,32 @@ class AddPlaceActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener 
 
                 }
         queue.add(postRequest)
+    }
+
+    private fun calculateNextTime(timeAmount:Int):String{
+        val df = SimpleDateFormat("hh:mm aa", Locale.getDefault())
+        val now = Calendar.getInstance()
+        now.add(Calendar.MINUTE, timeAmount)
+        val teenMinutesFromNow = df.format(now.time)
+        val nextTime = teenMinutesFromNow
+
+        return  add12Hour(nextTime)
+    }
+
+    private fun setTimeAmountPlace(time:Int){
+        timeAmount = time
+    }
+
+    private fun getTimeAmountPlace():Int{
+        return timeAmount
+    }
+
+    private fun add12Hour(nextTime:String) :String{
+        var hour = nextTime.substring(0,2).toInt()
+        var minute = nextTime.substring(3,5)
+        hour = hour+12
+        return "${hour}:${minute}"
+
     }
 
 }
