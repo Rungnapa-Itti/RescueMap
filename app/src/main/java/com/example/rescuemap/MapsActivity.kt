@@ -738,7 +738,7 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 val kmInDec = calculate(item.latitude.toDouble(),item.longitude.toDouble())
                 val selectedLat= intent.getStringExtra("selectedLat").toString()
                 val selectedLng= intent.getStringExtra("selectedLng").toString()
-
+                var distanceAlert:Double
                 // Alert from select dropdown in Add place page
                 if(item.latitude == selectedLat.toString() && stateSelectDropdown == false){
                     val list = geocoder.getFromLocation(item.latitude.toDouble(), item.longitude.toDouble(), 1)
@@ -755,7 +755,19 @@ GoogleMap.OnMarkerClickListener , NavigationView.OnNavigationItemSelectedListene
                 }
 
                 // Default alert
-                if (kmInDec <= 1 ) {
+                if(item.topic == "จราจรติดขัด"){
+                    distanceAlert = 0.300
+                }else if(item.topic == "ทะเลาะวิวาท" ){
+                    distanceAlert = 0.400
+                }else if (item.topic == "ไฟไหม้"){
+                    distanceAlert = 0.500
+                }else if (item.topic == "น้ำท่วม"){
+                    distanceAlert = 0.400
+                }else{
+                    distanceAlert = 0.400
+                }
+
+                if (kmInDec <= distanceAlert ) {
                         //alert isn't open and Latitude Longitude not null and this location never open alert
                     if (state == false && getLatitude() != null && getLongitude() != null && listAlerted.contains(content) == false) {
                         Log.d("You stay around radius","${state} ${getLatitude()} ${getLongitude()}")
