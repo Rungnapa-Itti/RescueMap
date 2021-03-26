@@ -42,80 +42,123 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 map:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-<!--                <Button-->
-<!--                    android:id="@+id/logout"-->
-<!--                    android:layout_width="100dp"-->
-<!--                    android:layout_height="50dp"-->
-<!--                    android:text="Logout"-->
-<!--                    android:textSize="10sp"-->
-<!--                    android:padding="10dp"-->
-<!--                    android:layout_marginLeft="200dp"-->
-<!--                    android:layout_marginTop="0dp"-->
-<!--                    android:foreground="?android:attr/selectableItemBackground"-->
-<!--                    android:textColor="@android:color/white"-->
-<!--                    android:background="#db5a6b" />-->
+                <!--                <Button-->
+                <!--                    android:id="@+id/logout"-->
+                <!--                    android:layout_width="100dp"-->
+                <!--                    android:layout_height="50dp"-->
+                <!--                    android:text="Logout"-->
+                <!--                    android:textSize="10sp"-->
+                <!--                    android:padding="10dp"-->
+                <!--                    android:layout_marginLeft="200dp"-->
+                <!--                    android:layout_marginTop="0dp"-->
+                <!--                    android:foreground="?android:attr/selectableItemBackground"-->
+                <!--                    android:textColor="@android:color/white"-->
+                <!--                    android:background="#db5a6b" />-->
             </androidx.appcompat.widget.Toolbar>
 
-<!--            <Button-->
-<!--                android:layout_width="100dp"-->
-<!--                android:layout_height="50dp"-->
-<!--                android:layout_marginLeft="270dp"-->
-<!--                android:layout_marginTop="150dp"-->
-<!--                android:id="@+id/button"-->
+            <!--            <Button-->
+            <!--                android:layout_width="100dp"-->
+            <!--                android:layout_height="50dp"-->
+            <!--                android:layout_marginLeft="270dp"-->
+            <!--                android:layout_marginTop="150dp"-->
+            <!--                android:id="@+id/button"-->
 
-                />
+            />
+
             <RelativeLayout
-                android:layout_height="50dp"
+                android:id="@+id/relLayout1"
                 android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="60dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:elevation="10dp"
                 android:background="@drawable/while_border"
-                android:id="@+id/relLayout1">
+                android:elevation="10dp">
 
                 <ImageView
+                    android:id="@+id/ic_magnify"
                     android:layout_width="15dp"
                     android:layout_height="15dp"
-                    android:id="@+id/ic_magnify"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:src="@drawable/ic_search"/>
+                    android:src="@drawable/ic_search" />
 
                 <EditText
+                    android:id="@+id/input_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_toRightOf="@+id/ic_magnify"
                     android:layout_centerVertical="true"
-                    android:textSize="15dp"
-                    android:textColor="#000"
-                    android:id="@+id/input_search"
+                    android:layout_toRightOf="@+id/ic_magnify"
                     android:background="@null"
                     android:hint="Enter Address,City or Zip Code"
-                    android:imeOptions="actionSearch"/>
+                    android:imeOptions="actionSearch"
+                    android:textColor="#000"
+                    android:textSize="15dp" />
 
             </RelativeLayout>
 
-            <Button
-                android:id="@+id/buttonAdd"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="670dp"
-                android:layout_marginLeft="20dp"
-                android:text=""
-                android:background="@drawable/addbut_bg"/>
 <!--            <Button-->
-<!--            android:id="@+id/logout"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:text="Logout"-->
-<!--            android:textSize="10sp"-->
-<!--            android:padding="10dp"-->
-<!--            android:layout_marginLeft="300dp"-->
-<!--            android:layout_marginTop="0dp"-->
-<!--            android:foreground="?android:attr/selectableItemBackground"-->
-<!--            android:textColor="@android:color/white"-->
-<!--            android:background="#db5a6b" />-->
+<!--                android:id="@+id/buttonAdd"-->
+<!--                android:layout_width="100dp"-->
+<!--                android:layout_height="50dp"-->
+<!--                android:layout_marginLeft="20dp"-->
+<!--                android:layout_marginTop="670dp"-->
+<!--                android:background="@drawable/round_button"-->
+<!--                android:text="เพิ่มเหตุการณ์"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textStyle="bold">-->
+
+<!--                <ImageView-->
+<!--                    android:layout_width="15dp"-->
+<!--                    android:layout_height="15dp"-->
+<!--                    android:layout_centerVertical="true"-->
+<!--                    android:layout_marginLeft="10dp"-->
+<!--                    android:src="@drawable/ic_add_place" />-->
+
+<!--            </Button>-->
+            <RelativeLayout
+                android:id="@+id/buttonAdd"
+                android:layout_width="180dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="670dp"
+                android:background="@drawable/round_button"
+                tools:layout_editor_absoluteX="9dp"
+                tools:layout_editor_absoluteY="26dp">
+
+                <ImageView
+                    android:layout_margin="10dp"
+                    android:id="@+id/image"
+                    android:layout_alignParentTop="true"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/ic_add_place"/>
+
+                <TextView
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:textStyle="bold"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="เพิ่มเหตุการณ์"
+                    android:textColor="#FFF"
+                    android:textSize="15sp" />
+
+            </RelativeLayout>
+            <!--            <Button-->
+            <!--            android:id="@+id/logout"-->
+            <!--            android:layout_width="100dp"-->
+            <!--            android:layout_height="50dp"-->
+            <!--            android:text="Logout"-->
+            <!--            android:textSize="10sp"-->
+            <!--            android:padding="10dp"-->
+            <!--            android:layout_marginLeft="300dp"-->
+            <!--            android:layout_marginTop="0dp"-->
+            <!--            android:foreground="?android:attr/selectableItemBackground"-->
+            <!--            android:textColor="@android:color/white"-->
+            <!--            android:background="#db5a6b" />-->
         </FrameLayout>
 
 
