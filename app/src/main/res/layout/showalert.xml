@@ -97,7 +97,7 @@
             android:id="@+id/button1"
             android:layout_marginLeft="50dp"
             android:text="ยืนยันเหตุการณ์"
-            android:textColor="#2acf51"
+            android:textColor="@android:color/white"
             android:background="@drawable/border"
             android:drawableLeft="@drawable/ic_like"
 
@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/button2"
             android:text="แสดงเส้นทาง"
-            android:textColor="#2acf51"
+            android:textColor="@android:color/white"
             android:background="@drawable/border"
             android:drawableLeft="@drawable/ic_navigation"
             />

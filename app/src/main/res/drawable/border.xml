@@ -4,9 +4,9 @@
      android:layout_width="match_parent">
 
 
-    <solid android:color="@android:color/white" />
+    <solid android:color="#db5a6b" />
     <stroke android:width="3dip"
-        android:color="#309ed5"
+        android:color="#db5a6b"
         />
     <corners android:radius="10dp"/>
 
